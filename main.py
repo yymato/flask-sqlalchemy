@@ -44,6 +44,7 @@ def register():
     if form.validate_on_submit():
         pass
     return render_template('register.html', form=form)
+
 @app.route('/')
 def index():
     return redirect('/register')

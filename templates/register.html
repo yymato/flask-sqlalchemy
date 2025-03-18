@@ -5,7 +5,8 @@
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
-            {{form.name.label}} {form.about.label(class="control-form")}<br>
+            {{form.name.label}} <br>
+            {{form.name(class="control-form", type="text")}}
         </p>
         <p>
             {{ form.email.label }}<br>
@@ -35,7 +36,8 @@
             {% endfor %}
         </p>
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-        <p> {{ form.about.label}} {form.about.label(class="control-form")}</p>
+        <p> {{ form.about.label}}</p> <br>
+         {{form.about(class="control-form", type="text")}}
         <div>{{ message }}</div>
     </form>
 {% endblock %}
