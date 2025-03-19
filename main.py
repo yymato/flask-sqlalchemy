@@ -25,7 +25,7 @@ def main():
     # user.set_password('123')
     # db_sess.add(user)
     # db_sess.commit()
-    app.run()
+    app.run(host='26.19.245.163', port=65565)
 
 
 def get_users_name():
@@ -53,10 +53,10 @@ def show_jobs():
         job.team_leader = form.team_leader.data
         job.job = form.job.data
         job.work_size = form.work_size.data
-        job.collaborators = form.collaborators.data
-        print(job.team_leader)
-        print(job.job)
-        print(job.collaborators)
+        job.collaborators = ', '.join(form.collaborators.data)
+        db_sess = create_session()
+        db_sess.add(job)
+        db_sess.commit()
     return render_template('show_jobs.html', form=form, jobs=get_jobs())
 
 
@@ -78,10 +78,30 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect('/login')
+
     form = RegisterForm()
     if form.validate_on_submit():
-        pass
-    return render_template('register.html', form=form)
+        db_sess = create_session()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user:
+            return render_template('register.html', message='Данная почта уже зарегистрирована. Попробуйте войти.',
+                                   form=form)
+        else:
+            db_sess = create_session()
+            user = User()
+            user.name = form.name.data
+            user.email = form.email.data
+            user.set_password(form.password.data)
+            db_sess.add(user)
+            db_sess.commit()
+            login_user(user)
+            return redirect('/')
+    return render_template('register.html', title='Регистрация', form=form)
+
+
+
 
 @app.route('/')
 def index():
