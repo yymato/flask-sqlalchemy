@@ -1,0 +1,20 @@
+.table-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.btn-container {
+    position: absolute;
+    top: 63%;
+    left: -150px; /* Расположение кнопки слева от таблицы */
+    transform: translateY(-50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.table-container:hover .btn-container {
+    opacity: 1;
+    visibility: visible;
+}

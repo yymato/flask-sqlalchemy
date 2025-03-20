@@ -1,6 +1,6 @@
 from traceback import print_tb
 
-from flask import Flask, request, make_response, session, render_template, redirect, url_for
+from flask import Flask, request, make_response, session, render_template, redirect, url_for, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_login import current_user
 from data import db_session
@@ -40,8 +40,25 @@ def get_jobs():
     db_session = create_session()
     data = []
     for i in db_session.query(Jobs).all():
-        data.append([i.job, i.team_leader, i.work_size, i.collaborators, i.is_finished])
+        data.append([i.id, i.job, i.team_leader, i.work_size, i.collaborators, i.is_finished])
     return data
+
+
+@app.route("/get_job/<int:job_id>")
+def get_job(job_id):
+    db_session = create_session()
+    job = db_session.query(Jobs).filter(Jobs.id == job_id).first()
+    if not job:
+        return jsonify({"error": "Job not found"}), 404
+
+    return jsonify({
+        'id': job.id,
+        'team_leader': job.team_leader,
+        'job': job.job,
+        'collaboration': job.collaborators,
+        'worksize': job.work_size
+    })
+
 
 @app.route('/jobs', methods=['GET', 'POST'])
 def show_jobs():
@@ -49,6 +66,7 @@ def show_jobs():
     form.team_leader.choices = get_users_name()
     form.collaborators.choices = get_users_name()
     if form.validate_on_submit():
+        print(2)
         job = Jobs()
         job.team_leader = form.team_leader.data
         job.job = form.job.data
@@ -58,7 +76,14 @@ def show_jobs():
         db_sess.add(job)
         db_sess.commit()
         return redirect(url_for('show_jobs'))
-    return render_template('show_jobs.html', form=form, jobs=get_jobs())
+
+    form1 = JobForm()
+    form1.team_leader.choices = get_users_name()
+    form1.collaborators.choices = get_users_name()
+
+    if form1.validate_on_submit():
+        print(1)
+    return render_template('show_jobs.html', form=form, form1=form1, jobs=get_jobs())
 
 
 @app.route('/login', methods=['GET', 'POST'])
