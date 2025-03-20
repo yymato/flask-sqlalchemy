@@ -1,6 +1,6 @@
 from traceback import print_tb
 
-from flask import Flask, request, make_response, session, render_template, redirect
+from flask import Flask, request, make_response, session, render_template, redirect, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_login import current_user
 from data import db_session
@@ -57,6 +57,7 @@ def show_jobs():
         db_sess = create_session()
         db_sess.add(job)
         db_sess.commit()
+        return redirect(url_for('show_jobs'))
     return render_template('show_jobs.html', form=form, jobs=get_jobs())
 
 
