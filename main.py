@@ -25,14 +25,24 @@ def main():
     # user.set_password('123')
     # db_sess.add(user)
     # db_sess.commit()
-    app.run(host='26.19.245.163', port=65565)
+    app.run()
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/login')
 
 
-def get_users_name():
+def get_users_name(collaborators=''):
     db_sess = create_session()
     data = []
+    collaborators = str(collaborators).split(', ')
     for us in db_sess.query(User).all():
-        data.append((us.id, us.name))
+        if collaborators != ['']:
+            if str(us.id) in collaborators:
+                data.append((us.id, us.name))
+        else:
+            data.append(((us.id, us.name)))
     return data
 
 
@@ -43,7 +53,7 @@ def get_jobs():
         data.append([i.id, i.job, i.team_leader, i.work_size, i.collaborators, i.is_finished])
     return data
 
-
+@login_required
 @app.route("/get_job/<int:job_id>")
 def get_job(job_id):
     db_session = create_session()
@@ -53,14 +63,15 @@ def get_job(job_id):
 
     return jsonify({
         'id': job.id,
-        'team_leader': job.team_leader,
+        'team_leader': get_users_name(job.team_leader),
         'job': job.job,
-        'collaboration': job.collaborators,
+        'collaboration': get_users_name(job.collaborators),
         'worksize': job.work_size
     })
 
 
 @app.route('/jobs', methods=['GET', 'POST'])
+@login_required
 def show_jobs():
     form = JobForm()
     form.team_leader.choices = get_users_name()
