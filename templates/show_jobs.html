@@ -87,17 +87,19 @@
     {% for i in jobs %}
        <h3>Action # {{ i[0] }}</h3>
             <div class="table-container">
-                <div class="btn-container">
-                    <button type="button" class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editJob" data-job-id="{{ i[0] }}">Редактировать</button>
-                    <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#acceptDelete"
-                                aria-expanded="false" aria-controls="collapseExample">Удалить</button>
-                    <div class="collapse" id="acceptDelete">
-                      <div class="card card-body">
-                            <h5>Вы уверены, что хотите удалить?</h5>
-                            <a class="btn btn-danger" href="/delete_job/{{ i[0] }}">Удалить</a>
-                      </div>
+                {% if i[2] == current_user.id or current_user.id == 1%}
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editJob" data-job-id="{{ i[0] }}">Редактировать</button>
+                        <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#acceptDelete"
+                                    aria-expanded="false" aria-controls="collapseExample">Удалить</button>
+                        <div class="collapse" id="acceptDelete">
+                          <div class="card card-body">
+                                <h5>Вы уверены, что хотите удалить?</h5>
+                                <a class="btn btn-danger" href="/delete_job/{{ i[0] }}">Удалить</a>
+                          </div>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
                 <table class="table table-striped">
                     <thead align="left" class="thead-dark">
                         <tr>
@@ -134,3 +136,4 @@
 <script src="{{ url_for('static', filename='script.js')}}"></script>
 
 {% endblock %}
+
