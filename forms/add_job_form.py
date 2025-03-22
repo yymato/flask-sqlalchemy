@@ -8,12 +8,18 @@ from wtforms.validators import DataRequired
 
 
 class JobForm(FlaskForm):
-
+    form_type = HiddenField(default="add")
     team_leader = SelectField('TeamLead', validators=[DataRequired()])
     job = TextAreaField('Description', validators=[DataRequired()])
     work_size = IntegerField('Work_size', validators=[DataRequired()])
     collaborators = SelectMultipleField('Collaborators')
     submit = SubmitField('Создать')
 
-class EditJobForm(JobForm):
-    job_id = StringField('job_id')
+class EditJobForm(FlaskForm):
+    form_type = HiddenField(default="edit")
+    job_id = HiddenField(default=None)
+    team_leader = SelectField('TeamLead', validators=[DataRequired()])
+    job = TextAreaField('Description', validators=[DataRequired()])
+    work_size = IntegerField('Work_size', validators=[DataRequired()])
+    collaborators = SelectMultipleField('Collaborators')
+    submit = SubmitField('Сохранить')

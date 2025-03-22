@@ -6,9 +6,9 @@
         <link type="text/css" href="{{ url_for('static', filename='table_button.css')}}" rel="stylesheet">
 
 
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_job">Добавить работу</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addJob">Добавить работу</button>
 
-    <div class="modal fade" id="add_job" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addJob" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -16,8 +16,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
               </div>
               <div class="modal-body">
-                    <form action="" method="post">
+                <form action="" method="post">
                   {{ form.hidden_tag() }}
+                  {{ form.form_type }}
                   <div class="mb-3">
                     {{ form.team_leader.label }}
                     {{ form.team_leader(class="form-control") }}
@@ -43,41 +44,43 @@
             </div>
           </div>
 
- <div class="modal fade" id="edit_job" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="EditJob">Редактировать работу</h5>
-                </div>
-              <div class="modal-body">
-                  <form action="" method="post">
-                      {{ form.hidden_tag() }}
-                      <div class="mb-3">
-                        {{ form1.team_leader.label }}
-                        {{ form1.team_leader(class="form-control", id="edit_job_leader") }}
-                      </div>
-                      <div class="mb-3">
-                        {{ form1.job.label }}
-                        {{ form1.job(class="form-control", id="edit_job_job") }}
-                      </div>
-                      <div class="mb-3">
-                        {{ form1.work_size.label }}
-                        {{ form1.work_size(class="form-control", id="edit_job_worksize") }}
-                      </div>
-                      <div class="mb-3">
-                        {{ form1.collaborators.label }}
-                        {{ form1.collaborators(class="form-control", id="edit_job_collaborators") }}
-                      </div>
-                      <div class="mb-3">
-                          {{ form1.submit(type="submit", class="btn btn-primary") }}
-                      </div>
-                </form>
+<div class="modal fade" id="editJob" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Редактирование работы</h5>
+      </div>
+      <div class="modal-body">
+          <form action="" method="post">
+              {{ form1.hidden_tag() }}
+              {{ form1.form_type }}
+              {{ form1.job_id }}
+              <div class="mb-3">
+                {{ form1.team_leader.label }}
+                {{ form1.team_leader(class="form-control", id="edit_job_leader") }}
               </div>
-                <a class="btn btn-danger" href="/jobs">Закрыть</a>
+              <div class="mb-3">
+                {{ form1.job.label }}
+                {{ form1.job(class="form-control", id="edit_job_job") }}
               </div>
+              <div class="mb-3">
+                {{ form1.work_size.label }}
+                {{ form1.work_size(class="form-control", id="edit_job_worksize") }}
+              </div>
+              <div class="mb-3">
+                {{ form1.collaborators.label }}
+                {{ form1.collaborators(class="form-control", id="edit_job_collaborators") }}
+              </div>
+              <div class="mb-3">
+                  {{ form1.submit(type="submit", class="btn btn-primary") }}
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Закрыть</button>
+              </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-            </div>
-          </div>
 
 <h1 align="center">Works Log</h1>
     {% set c = 0 %}
@@ -85,8 +88,7 @@
        <h3>Action # {{ i[0] }}</h3>
             <div class="table-container">
                 <div class="btn-container">
-                    <button type="button" class="btn btn-primary edit-btn" data-job-id="{{ i[0] }}"
-                            data-bs-toggle="modal" data-bs-target="#edit_job">Редактировать</button>
+                    <button type="button" class="btn btn-primary edit-btn" data-bs-toggle="modal" data-bs-target="#editJob" data-job-id="{{ i[0] }}">Редактировать</button>
                 </div>
                 <table class="table table-striped">
                     <thead align="left" class="thead-dark">

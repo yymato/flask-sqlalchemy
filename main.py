@@ -6,7 +6,7 @@ from flask_login import current_user
 from data import db_session
 from data.db_session import create_session
 from data.users import User, Jobs
-from forms.add_job_form import JobForm
+from forms.add_job_form import JobForm, EditJobForm
 from forms.login_form import LoginForm
 from forms.register import RegisterForm
 
@@ -62,12 +62,18 @@ def get_job(job_id):
         return jsonify({"error": "Job not found"}), 404
 
     return jsonify({
+        'success': True,
         'id': job.id,
         'team_leader': get_users_name(job.team_leader),
         'job': job.job,
         'collaboration': get_users_name(job.collaborators),
         'worksize': job.work_size
     })
+
+@app.route('/edit_job', methods=['POST'])
+def edit_job():
+    db_sess = create_session()
+    form1 = EditJobForm()
 
 
 @app.route('/jobs', methods=['GET', 'POST'])
@@ -76,24 +82,34 @@ def show_jobs():
     form = JobForm()
     form.team_leader.choices = get_users_name()
     form.collaborators.choices = get_users_name()
-    if form.validate_on_submit():
-        print(2)
-        job = Jobs()
-        job.team_leader = form.team_leader.data
-        job.job = form.job.data
-        job.work_size = form.work_size.data
-        job.collaborators = ', '.join(form.collaborators.data)
-        db_sess = create_session()
-        db_sess.add(job)
-        db_sess.commit()
-        return redirect(url_for('show_jobs'))
 
-    form1 = JobForm()
+    form1 = EditJobForm()
     form1.team_leader.choices = get_users_name()
     form1.collaborators.choices = get_users_name()
 
-    if form1.validate_on_submit():
-        print(1)
+    if request.method == 'POST':
+        db_sess = create_session()
+        if form.form_type.data == 'add' and form.validate_on_submit():
+            job = Jobs()
+            job.team_leader = form.team_leader.data
+            job.job = form.job.data
+            job.work_size = form.work_size.data
+            job.collaborators = ', '.join(form.collaborators.data)
+
+            db_sess.add(job)
+            db_sess.commit()
+
+        if form1.form_type.data == 'edit' and form1.validate_on_submit():
+            job = db_sess.query(Jobs).filter(Jobs.id == form1.job_id.data).first()
+
+            job.team_leader = form1.team_leader.data
+            job.job = form1.job.data
+            job.work_size = form1.work_size.data
+            job.collaborators = ', '.join(form1.collaborators.data)
+            db_sess.commit()
+
+        return redirect('/jobs')
+
     return render_template('show_jobs.html', form=form, form1=form1, jobs=get_jobs())
 
 
