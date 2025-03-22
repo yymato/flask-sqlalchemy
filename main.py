@@ -32,6 +32,14 @@ def logout():
     logout_user()
     return redirect('/login')
 
+@login_required
+@app.route("/delete_job/<int:job_id>")
+def delete_job(job_id):
+    db_sess = create_session()
+    db_sess.delete(db_sess.query(Jobs).filter(Jobs.id == job_id).first())
+    db_sess.commit()
+
+    return redirect('/jobs')
 
 def get_users_name(collaborators=''):
     db_sess = create_session()
@@ -69,11 +77,6 @@ def get_job(job_id):
         'collaboration': get_users_name(job.collaborators),
         'worksize': job.work_size
     })
-
-@app.route('/edit_job', methods=['POST'])
-def edit_job():
-    db_sess = create_session()
-    form1 = EditJobForm()
 
 
 @app.route('/jobs', methods=['GET', 'POST'])
