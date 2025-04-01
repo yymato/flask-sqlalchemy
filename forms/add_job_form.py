@@ -13,6 +13,9 @@ class JobForm(FlaskForm):
     job = TextAreaField('Description', validators=[DataRequired()])
     work_size = IntegerField('Work_size', validators=[DataRequired()])
     collaborators = SelectMultipleField('Collaborators')
+    is_finished = BooleanField('is_finished')
+    hazard = SelectField('Hazard', validators=[DataRequired()])
+
     submit = SubmitField('Создать')
 
 class EditJobForm(FlaskForm):
@@ -22,4 +25,6 @@ class EditJobForm(FlaskForm):
     job = TextAreaField('Description', validators=[DataRequired()])
     work_size = IntegerField('Work_size', validators=[DataRequired()])
     collaborators = SelectMultipleField('Collaborators')
+    is_finished = BooleanField('is_finished')
+    hazard = SelectField('Hazard', validators=[DataRequired()])
     submit = SubmitField('Сохранить')

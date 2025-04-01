@@ -35,6 +35,14 @@
                     {{ form.collaborators.label }}
                     {{ form.collaborators(class="form-control") }}
                   </div>
+                    <div class="mb-3">
+                    {{ form.hazard.label }}
+                    {{ form.hazard(class="form-control") }}
+                  </div>
+                    <div class="mb-3">
+                    {{ form.is_finished.label }}
+                    {{ form.is_finished(class="form-control") }}
+                  </div>
                   <div class="mb-3">
                       {{ form.submit(type="submit", class="btn btn-primary") }}
                   </div>
@@ -72,6 +80,14 @@
                 {{ form1.collaborators(class="form-control", id="edit_job_collaborators") }}
               </div>
               <div class="mb-3">
+                    {{ form.hazard.label }}
+                    {{ form.hazard(class="form-control") }}
+              </div>
+                   <div class="mb-3">
+                    {{ form.is_finished.label }}
+                    {{ form.is_finished(class="form-control") }}
+                  </div>
+              <div class="mb-3">
                   {{ form1.submit(type="submit", class="btn btn-primary") }}
                   <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Закрыть</button>
               </div>
@@ -108,6 +124,7 @@
                             <td>Duration</td>
                             <td>List of collaboration</td>
                             <td>if finished</td>
+                            <td>Hazard</td>
                         </tr>
                     </thead>
 
@@ -124,6 +141,7 @@
                                 Not finished
                             {% endif %}
                             </td>
+                        <td>{{i[6]}}</td>
                         </tr>
                     </table>
                 </div>

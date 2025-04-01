@@ -18,9 +18,10 @@ class Jobs(SqlAlchemyBase):
     collaborators = sqlalchemy.Column(sqlalchemy.String)
     is_finished = sqlalchemy.Column(sqlalchemy.Boolean)
 
+    hazard_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('hazard.id'))
+
     user = orm.relationship('User')
-
-
+    hazard = orm.relationship('Hazard', backref='jobs')
 
 class User(SqlAlchemyBase, UserMixin):
     __tablename__ = 'users'
@@ -42,3 +43,10 @@ class User(SqlAlchemyBase, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
+
+
+class Hazard(SqlAlchemyBase):
+    __tablename__ = 'hazard'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
+                           autoincrement=True)
+    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)

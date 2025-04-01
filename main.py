@@ -5,7 +5,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_login import current_user
 from data import db_session
 from data.db_session import create_session
-from data.users import User, Jobs
+from data.users import User, Jobs, Hazard
 from forms.add_job_form import JobForm, EditJobForm
 from forms.login_form import LoginForm
 from forms.register import RegisterForm
@@ -18,13 +18,7 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 def main():
     db_session.global_init('db/123.sqlite')
-    # db_sess = create_session()
-    # user = User()
-    # user.email = 'admin@admin.com'
-    # user.name = 'admin'
-    # user.set_password('123')
-    # db_sess.add(user)
-    # db_sess.commit()
+    # db_sess = db_session.create_session()
     app.run()
 
 @app.route('/logout')
@@ -50,7 +44,7 @@ def get_users_name(collaborators=''):
             if str(us.id) in collaborators:
                 data.append((us.id, us.name))
         else:
-            data.append(((us.id, us.name)))
+            data.append((us.id, us.name))
     return data
 
 
@@ -58,7 +52,15 @@ def get_jobs():
     db_session = create_session()
     data = []
     for i in db_session.query(Jobs).all():
-        data.append([i.id, i.job, i.team_leader, i.work_size, i.collaborators, i.is_finished])
+        data.append([i.id, i.job, i.team_leader, i.work_size, i.collaborators, i.is_finished, i.hazard.name])
+    print(data)
+    return data
+
+def get_hazard():
+    data = []
+    db_session = create_session()
+    for i in db_session.query(Hazard).all():
+        data.append((i.id, i.name))
     return data
 
 @login_required
@@ -85,10 +87,12 @@ def show_jobs():
     form = JobForm()
     form.team_leader.choices = get_users_name()
     form.collaborators.choices = get_users_name()
+    form.hazard.choices = get_hazard()
 
     form1 = EditJobForm()
     form1.team_leader.choices = get_users_name()
     form1.collaborators.choices = get_users_name()
+    form1.hazard.choices = get_hazard()
 
     if request.method == 'POST':
         db_sess = create_session()
@@ -98,6 +102,8 @@ def show_jobs():
             job.job = form.job.data
             job.work_size = form.work_size.data
             job.collaborators = ', '.join(form.collaborators.data)
+            job.is_finished = form.is_finished.data
+            job.hazard_id = form.hazard.data
 
             db_sess.add(job)
             db_sess.commit()
@@ -109,6 +115,8 @@ def show_jobs():
             job.job = form1.job.data
             job.work_size = form1.work_size.data
             job.collaborators = ', '.join(form1.collaborators.data)
+            job.hazard_id = form1.hazard.data
+            job.is_finished = form1.is_finished.data
             db_sess.commit()
 
         return redirect('/jobs')
