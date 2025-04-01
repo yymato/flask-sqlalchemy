@@ -17,7 +17,7 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
 def main():
-    db_session.global_init('123.sqlite')
+    db_session.global_init('db/123.sqlite')
     # db_sess = create_session()
     # user = User()
     # user.email = 'admin@admin.com'

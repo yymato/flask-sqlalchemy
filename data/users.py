@@ -12,12 +12,13 @@ class Jobs(SqlAlchemyBase):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    team_leader = sqlalchemy.Column(sqlalchemy.Integer)
+    team_leader = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
     job = sqlalchemy.Column(sqlalchemy.String)
     work_size = sqlalchemy.Column(sqlalchemy.Integer)
     collaborators = sqlalchemy.Column(sqlalchemy.String)
     is_finished = sqlalchemy.Column(sqlalchemy.Boolean)
 
+    user = orm.relationship('User')
 
 
 
@@ -30,6 +31,8 @@ class User(SqlAlchemyBase, UserMixin):
     email = sqlalchemy.Column(sqlalchemy.String, index=True, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+
+    jobs = orm.relationship("Jobs", back_populates='user')
 
     def __repr__(self):
         return f'<User> {self.id} {self.name} {self.email}'
