@@ -5,7 +5,8 @@ from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_login import current_user
 from data import db_session
 from data.db_session import create_session
-from data.users import User, Jobs, Hazard
+from data.users import User, Jobs, Hazard, Department
+from forms.add_department import DepartmentForm, EditDepartmentForm
 from forms.add_job_form import JobForm, EditJobForm
 from forms.login_form import LoginForm
 from forms.register import RegisterForm
@@ -63,6 +64,91 @@ def get_hazard():
     for i in db_session.query(Hazard).all():
         data.append((i.id, i.name))
     return data
+
+def get_departments():
+    data = []
+    db_session = create_session()
+    for i in db_session.query(Department).all():
+        data.append([i.chief, i.title, i.members, i.email])
+    return data
+
+@login_required
+@app.route("/delete_department/<int:department_id>")
+def delete_department(department_id):
+    db_sess = create_session()
+    department = db_sess.query(Department).filter(Department.id == department_id).first()
+    if department:
+        db_sess.delete(department)
+        db_sess.commit()
+    return redirect('/departments')
+
+
+@login_required
+@app.route('/departments', methods=['GET', 'POST'])
+def show_departments():
+    db_sess = create_session()
+    form = DepartmentForm()
+    form1 = EditDepartmentForm()
+
+    # Choices для SelectField
+    users = db_sess.query(User).all()
+    user_choices = [(u.id, u.name) for u in users]
+    form.chief.choices = user_choices
+    form.members.choices = user_choices
+    form1.chief.choices = user_choices
+    form1.members.choices = user_choices
+
+    if request.method == 'POST':
+        if form.form_type.data == 'add' and form.validate_on_submit():
+            department = Department()
+            department.title = form.title.data
+            department.chief = form.chief.data
+            department.members = ', '.join(form.members.data)
+            department.email = form.email.data
+            db_sess.add(department)
+            db_sess.commit()
+
+        elif form1.form_type.data == 'edit' and form1.validate_on_submit():
+            department = db_sess.query(Department).filter(Department.id == int(form1.department_id.data)).first()
+            if department:
+                department.title = form1.title.data
+                department.chief = form1.chief.data
+                department.members = ', '.join(form1.members.data)
+                department.email = form1.email.data
+                db_sess.commit()
+
+        return redirect('/departments')
+
+    # Получение всех департаментов
+    return render_template('show_departments.html', form=form, form1=form1, departments=get_departments())
+
+
+@login_required
+@app.route("/get_department/<int:department_id>")
+def get_department(department_id):
+    db_session = create_session()
+    department = db_session.query(Department).filter(Department.id == department_id).first()
+    if not department:
+        print('Нет департамента')
+        return jsonify({"error": "department not found"}), 404
+
+    print({
+        "success": True,
+        "id": department.id,
+        "title": department.title,
+        "chief": department.chief,
+        "members": get_users_name(department.members),
+        "email": department.email
+    })
+    return jsonify({
+        "success": True,
+        "id": department.id,
+        "title": department.title,
+        "chief": department.chief,
+        "members": get_users_name(department.members),
+        "email": department.email
+    })
+
 
 @login_required
 @app.route("/get_job/<int:job_id>")
