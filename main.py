@@ -19,6 +19,7 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 def main():
     db_session.global_init('db/123.sqlite')
     # db_sess = db_session.create_session()
+    get_jobs()
     app.run()
 
 @app.route('/logout')
@@ -52,8 +53,8 @@ def get_jobs():
     db_session = create_session()
     data = []
     for i in db_session.query(Jobs).all():
-        data.append([i.id, i.job, i.team_leader, i.work_size, i.collaborators, i.is_finished, i.hazard.name])
-    print(data)
+        data.append([i.id, i.job, i.team_leader, i.work_size, i.collaborators, i.is_finished, i.hazard[0].name])
+        print(data)
     return data
 
 def get_hazard():
@@ -103,7 +104,7 @@ def show_jobs():
             job.work_size = form.work_size.data
             job.collaborators = ', '.join(form.collaborators.data)
             job.is_finished = form.is_finished.data
-            job.hazard_id = form.hazard.data
+            job.hazard = [db_sess.query(Hazard).get(form.hazard.data)]
 
             db_sess.add(job)
             db_sess.commit()
@@ -115,7 +116,7 @@ def show_jobs():
             job.job = form1.job.data
             job.work_size = form1.work_size.data
             job.collaborators = ', '.join(form1.collaborators.data)
-            job.hazard_id = form1.hazard.data
+            job.hazard = [db_sess.query(Hazard).get(form1.hazard.data)]
             job.is_finished = form1.is_finished.data
             db_sess.commit()
 

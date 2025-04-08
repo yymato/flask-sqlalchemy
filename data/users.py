@@ -7,6 +7,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from data.db_session import SqlAlchemyBase
 
 
+association_table = sqlalchemy.Table(
+    'association',
+    SqlAlchemyBase.metadata,
+    sqlalchemy.Column('jobs', sqlalchemy.Integer,
+                      sqlalchemy.ForeignKey('jobs.id')),
+    sqlalchemy.Column('hazard', sqlalchemy.Integer,
+                      sqlalchemy.ForeignKey('hazard.id')))
+
 class Jobs(SqlAlchemyBase):
     __tablename__ = 'jobs'
 
@@ -17,11 +25,10 @@ class Jobs(SqlAlchemyBase):
     work_size = sqlalchemy.Column(sqlalchemy.Integer)
     collaborators = sqlalchemy.Column(sqlalchemy.String)
     is_finished = sqlalchemy.Column(sqlalchemy.Boolean)
-
-    hazard_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('hazard.id'))
-
     user = orm.relationship('User')
-    hazard = orm.relationship('Hazard', backref='jobs')
+
+    hazard = sqlalchemy.orm.relationship('Hazard', secondary="association", backref='jobs')
+
 
 class User(SqlAlchemyBase, UserMixin):
     __tablename__ = 'users'
